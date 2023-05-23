@@ -1,5 +1,10 @@
 ﻿using System;
+#if true
+using UnityEngine;
+#else
 using System.Numerics;
+#endif
+
 using System.Runtime.CompilerServices;
 
 namespace Nenuacho.EcsLiteQuadTree.Core
@@ -28,7 +33,7 @@ namespace Nenuacho.EcsLiteQuadTree.Core
 
             _maxPoints = maxPoints;
             _count = 0;
-            
+
             Children ??= new Quad[4];
             _points ??= new (Vector2, int)[_maxPoints];
         }
@@ -40,9 +45,17 @@ namespace Nenuacho.EcsLiteQuadTree.Core
 
         private void CreateQuad()
         {
+
+#if true
+            var size = new Vector2(Bounds.Size.x * 0.5f, Bounds.Size.x * 0.5f);
+            var halfX = size.x * 0.5f;
+            var halfY = size.y * 0.5f;
+#else
             var size = new Vector2(Bounds.Size.X * 0.5f, Bounds.Size.Y * 0.5f);
             var halfX = size.X * 0.5f;
             var halfY = size.Y * 0.5f;
+#endif
+
 
             Children[0].Init(new QuadBounds(Bounds.Center + new Vector2(-halfX, halfY), size), _maxPoints);
             Children[1].Init(new QuadBounds(Bounds.Center + new Vector2(halfX, halfY), size), _maxPoints);
@@ -87,16 +100,28 @@ namespace Nenuacho.EcsLiteQuadTree.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static float CalculateDistance(in Vector2 p1, in Vector2 p2)
         {
+#if true
+            double dx = p2.x - p1.x;
+            double dy = p2.y - p1.y;
+#else
             double dx = p2.X - p1.X;
             double dy = p2.Y - p1.Y;
+#endif
+
             return (float)Math.Sqrt(dx * dx + dy * dy);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static float DistanceToRectangle(in Vector2 point, in QuadBounds bounds)
         {
-            float dx = Max(bounds.Left - point.X, 0f, point.X - bounds.Right);
+#if true
+            float dx = Max(bounds.Left - point.x, 0f, point.x - bounds.Right);
+            float dy = Max(bounds.Bottom - point.y, 0f, point.y - bounds.Top);
+#else
+          float dx = Max(bounds.Left - point.X, 0f, point.X - bounds.Right);
             float dy = Max(bounds.Bottom - point.Y, 0f, point.Y - bounds.Top);
+#endif
+
             var r = Math.Sqrt(dx * dx + dy * dy);
             return (float)r;
         }
@@ -112,7 +137,13 @@ namespace Nenuacho.EcsLiteQuadTree.Core
         {
             var nearestDistance = float.MaxValue;
 
-            (Vector2, int) nearest = (Vector2.Zero, -1);
+
+#if true
+            (Vector2, int) nearest = (Vector2.zero, -1);
+#else
+             (Vector2, int) nearest = (Vector2.Zero, -1);
+#endif
+
 
             FindNearestObjectRecursive(target, ref nearest, ref nearestDistance);
 

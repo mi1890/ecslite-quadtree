@@ -1,4 +1,8 @@
-﻿using System.Numerics;
+﻿#if true
+using UnityEngine;
+#else
+using System.Numerics;
+#endif
 
 namespace Nenuacho.EcsLiteQuadTree.Components
 {
